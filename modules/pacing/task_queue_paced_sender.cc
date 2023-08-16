@@ -22,6 +22,7 @@
 #include "rtc_base/system/unused.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/field_trial.h"
+#include "rtc_base/logging.h"
 
 namespace webrtc {
 
@@ -261,6 +262,7 @@ void TaskQueuePacedSender::MaybeProcessPackets(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webrtc"),
                "TaskQueuePacedSender::MaybeProcessPackets");
 
+
   if (is_shutdown_ || !is_started_) {
     return;
   }
@@ -361,6 +363,10 @@ void TaskQueuePacedSender::UpdateStats() {
   new_stats.oldest_packet_enqueue_time =
       pacing_controller_.OldestPacketEnqueueTime();
   new_stats.queue_size = pacing_controller_.QueueSizeData();
+  Timestamp current = clock_->CurrentTime();
+  RTC_LOG(LS_VERBOSE) << "TaskQueuePacedSender::UpdateStats:1: [" << current.ms_or(-1) << "] expected_queue_time        = " << new_stats.expected_queue_time.ms_or(0);
+  RTC_LOG(LS_VERBOSE) << "TaskQueuePacedSender::UpdateStats:2: [" << current.ms_or(-1) << "] oldest_packet_enqueue_time = " << new_stats.oldest_packet_enqueue_time.ms_or(0);
+  RTC_LOG(LS_VERBOSE) << "TaskQueuePacedSender::UpdateStats:3: [" << current.ms_or(-1) << "] queue_size                 = " << new_stats.queue_size.bytes_or(0);
   OnStatsUpdated(new_stats);
 }
 

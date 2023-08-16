@@ -373,6 +373,10 @@ Timestamp PacingController::NextSendTime() const {
 
 void PacingController::ProcessPackets() {
   const Timestamp now = CurrentTime();
+  {
+    DataSize queue_size_data = QueueSizeData();
+    RTC_LOG(LS_VERBOSE) << "PacingController::ProcessPackets:1: [" << now.ms_or(-1) << "] ProcessPackets->start->queue_size_data = " << queue_size_data.bytes_or(0);
+  }
   Timestamp target_send_time = now;
 
   // Disable padding for realtime mode
@@ -534,6 +538,11 @@ void PacingController::ProcessPackets() {
   // Poll the time again, since we might have enqueued new fec/padding packets
   // with a later timestamp than `now`.
   MaybeUpdateMediaRateDueToLongQueue(CurrentTime());
+  {
+    Timestamp current = CurrentTime();
+    DataSize queue_size_data = QueueSizeData();
+    RTC_LOG(LS_VERBOSE) << "PacingController::ProcessPackets:2: [" << current.ms_or(-1) << "] ProcessPackets->end->queue_size_data = " << queue_size_data.bytes_or(0);
+  }
 }
 
 DataSize PacingController::PaddingToAdd(DataSize recommended_probe_size,
